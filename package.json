@@ -1,0 +1,19 @@
+{
+  "name": "com382-voice-conversations",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Sherpa-style voice conversation tool for COM 382 — students discuss readings out loud with an adaptive AI, instructor reviews video + transcript.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.1",
+    "archiver": "^7.0.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "multer": "^2.2.0",
+    "pdf-parse": "^1.1.1"
+  }
+}

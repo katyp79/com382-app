@@ -1,0 +1,25 @@
+# Render.com deployment blueprint. Render reads this to set up the app.
+services:
+  - type: web
+    name: com382-voice
+    runtime: node
+    plan: starter            # paid tier (~$7/mo) — REQUIRED to attach a persistent disk
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    disk:
+      name: data             # durable storage — survives restarts/redeploys
+      mountPath: /var/data
+      sizeGB: 5              # ~$1.25/mo; holds transcripts/grades + recent videos
+    envVars:
+      # You set these secret values in the Render dashboard — they are NOT in the repo.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY      # for server-side Whisper transcription (optional; falls back to browser if unset)
+        sync: false
+      - key: INSTRUCTOR_PASSWORD
+        sync: false
+      - key: MODEL
+        value: claude-sonnet-4-6
+      - key: DATA_DIR          # tells the app to store everything on the persistent disk
+        value: /var/data

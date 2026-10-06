@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>COM 382 · Instructor</title>
+<link rel="stylesheet" href="app.css?v=28"/>
+</head>
+<body>
+<header class="top">
+  <div>
+    <div class="logo">COM 382 · Voice Conversations</div>
+    <div class="sub">Instructor console</div>
+  </div>
+  <nav class="tabs">
+    <button data-view="create" class="active">＋ Create</button>
+    <button data-view="assignments">Assignments</button>
+    <button data-view="submissions">Submissions</button>
+  </nav>
+</header>
+
+<main>
+  <div id="status-banner"></div>
+
+  <!-- ===== LOGIN (only if a password is set) ===== -->
+  <section class="view" id="view-login">
+    <div class="card" style="max-width:420px;margin:40px auto">
+      <h2>Instructor sign-in</h2>
+      <p class="hint">Enter the instructor password to manage assignments and view submissions.</p>
+      <input type="password" id="login-pw" placeholder="Password"/>
+      <div class="row" style="margin-top:14px"><button class="btn" id="login-btn">Sign in</button></div>
+    </div>
+  </section>
+
+  <!-- ===== CREATE ===== -->
+  <section class="view active" id="view-create">
+    <div class="card">
+      <h2>Create a module conversation</h2>
+      <p class="hint">Mirrors your Sherpa setup: add the module material, tune how the AI probes understanding, set the rules. No 9,000-word limit here.</p>
+
+      <label>Title of the module material <span class="req">*</span></label>
+      <input type="text" id="f-title" placeholder="e.g. Module 1 — Affordances & social media"/>
+
+      <label>Module material source <span class="req">*</span></label>
+      <div class="toggle" id="src-toggle">
+        <button type="button" data-src="pdf" class="on">PDF</button>
+        <button type="button" data-src="text">Paste text</button>
+      </div>
+
+      <div id="src-pdf" style="margin-top:10px">
+        <div class="drop" id="drop">📄 Click or drag a PDF here<br><span class="footnote">Any length. Only the page range below is used.</span></div>
+        <input type="file" id="f-pdf" accept="application/pdf" style="display:none"/>
+        <div id="pdf-name" class="footnote" style="margin-top:8px"></div>
+        <div class="row" style="margin-top:8px">
+          <div><label style="margin:0">Start page</label><input type="number" id="f-start" min="1" style="width:120px" placeholder="1"/></div>
+          <div><label style="margin:0">End page</label><input type="number" id="f-end" min="1" style="width:120px" placeholder="14"/></div>
+        </div>
+      </div>
+
+      <div id="src-text" style="margin-top:10px;display:none">
+        <textarea id="f-text" rows="6" placeholder="Paste the module material text here (or a detailed 'discussion source' summary)…"></textarea>
+        <div class="wordcount" id="text-wc"></div>
+      </div>
+
+      <div class="grid2" style="margin-top:6px">
+        <div>
+          <label>Subject</label>
+          <select id="f-subject">
+            <option>Communication</option><option>Social Science</option><option>Humanities</option>
+            <option>Natural Science</option><option>Business</option><option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label>Grade level</label>
+          <select id="f-grade"><option>College</option><option>Graduate</option><option>High School</option></select>
+        </div>
+      </div>
+
+      <h3 style="margin-top:24px">Design the conversation</h3>
+      <label>How should the AI probe understanding?</label>
+      <select id="f-tuning">
+        <option value="concepts">Check understanding of specific concepts I name</option>
+        <option value="ai">Let the AI decide the flow entirely</option>
+      </select>
+      <p class="hint">Either way, questions escalate through the Depth of Knowledge levels (recall → analysis → reasoning → application).</p>
+
+      <div id="concepts-box">
+        <p class="hint" style="margin-top:0">List up to 6 concepts (one per question). Each student gets them in a <strong>randomized order</strong>, so no two students get the same script.</p>
+        <label>Concept 1</label><input type="text" id="f-c1" placeholder="e.g. how affordances shape online behavior"/>
+        <label>Concept 2 <span class="footnote">(optional)</span></label><input type="text" id="f-c2"/>
+        <label>Concept 3 <span class="footnote">(optional)</span></label><input type="text" id="f-c3"/>
+        <label>Concept 4 <span class="footnote">(optional)</span></label><input type="text" id="f-c4"/>
+        <label>Concept 5 <span class="footnote">(optional)</span></label><input type="text" id="f-c5"/>
+        <label>Concept 6 <span class="footnote">(optional)</span></label><input type="text" id="f-c6"/>
+      </div>
+
+      <h3 style="margin-top:24px">Rules</h3>
+      <div class="grid2">
+        <div>
+          <label>Students paste their own work first?</label>
+          <select id="f-studentwork">
+            <option value="true" selected>Yes — questions are about their own definition + indicators</option>
+            <option value="false">No — questions about the module material only</option>
+          </select>
+        </div>
+        <div>
+          <label>Required final question <span class="footnote">(asked last, every time)</span></label>
+          <input type="text" id="f-finalq" value="What role did the chatbot play in your process, and was there any feedback you disagreed with?"/>
+        </div>
+        <div>
+          <label>Number of exchanges</label>
+          <select id="f-maxq"><option value="3">3 (quick)</option><option value="4">4</option><option value="5" selected>5 (standard)</option><option value="6">6</option><option value="7">7</option><option value="8">8 (deep)</option></select>
+        </div>
+        <div>
+          <label>Minimum words per answer</label>
+          <select id="f-minwords"><option>5</option><option selected>10</option><option>20</option></select>
+        </div>
+        <div>
+          <label>Camera</label>
+          <select id="f-camera"><option value="true">Required — record video</option><option value="false">Off — audio/transcript only</option></select>
+        </div>
+        <div>
+          <label>Recording requirement</label>
+          <select id="f-avoptional">
+            <option value="">Required — must have working camera/mic to start</option>
+            <option value="1">Accommodation — allow starting without a recording</option>
+          </select>
+        </div>
+        <div>
+          <label>Coach mode</label>
+          <select id="f-coachmode">
+            <option value="assessment">Assessment — measure only (don't reveal answers)</option>
+            <option value="coaching">Coaching — correct &amp; teach during the conversation</option>
+          </select>
+        </div>
+        <div>
+          <label>AI feedback to students</label>
+          <select id="f-feedback">
+            <option value="approve">I approve it before students see it</option>
+            <option value="immediate">Share immediately after they finish</option>
+          </select>
+        </div>
+        <div>
+          <label>Show the module material to students?</label>
+          <select id="f-showreading">
+            <option value="false" selected>No — keep it private (recommended)</option>
+            <option value="true">Yes — students may read it during the chat</option>
+          </select>
+        </div>
+        <div>
+          <label>Think time before recording</label>
+          <select id="f-waiting">
+            <option value="0" selected>None — record right away</option>
+            <option value="15">15 seconds</option>
+            <option value="30">30 seconds</option>
+            <option value="60">60 seconds (like Sherpa)</option>
+          </select>
+        </div>
+        <div>
+          <label>Max time per answer</label>
+          <select id="f-answerlimit">
+            <option value="0">No limit</option>
+            <option value="60">1 minute</option>
+            <option value="90">1.5 minutes</option>
+            <option value="120">2 minutes</option>
+            <option value="180">3 minutes</option>
+            <option value="300">5 minutes</option>
+            <option value="360" selected>6 minutes</option>
+            <option value="600">10 minutes</option>
+          </select>
+        </div>
+        <div>
+          <label>Must start answering within</label>
+          <select id="f-answerwindow">
+            <option value="0">Off — no silence limit</option>
+            <option value="30">30 seconds</option>
+            <option value="45">45 seconds</option>
+            <option value="60" selected>60 seconds</option>
+            <option value="90">90 seconds</option>
+          </select>
+        </div>
+      </div>
+      <p class="hint" style="margin-top:6px">⏱ "Max time per answer" caps each response. Students see a gentle note up front ("you have up to X minutes — take your time"); a live countdown only appears near the end, and when it reaches zero the answer auto-submits and the conversation moves on. (Think time is separate, before recording starts.)</p>
+      <p class="hint" style="margin-top:6px">🔇 "Must start answering within" stops a student from sitting silently. If they haven't begun <em>speaking</em> within this window after a question, it auto-advances and records "(no answer — didn't begin speaking)". Counts from when recording starts (after think time).</p>
+      <p class="hint" style="margin-top:6px">⚠️ If you paste a detailed "discussion source" / answer-key style document, keep this <strong>No</strong> — otherwise students could read the answers. Students should have gone through the actual module material beforehand.</p>
+
+      <div class="row" style="margin-top:22px">
+        <button class="btn big" id="save-btn">Save assignment</button>
+        <button class="btn subtle" id="reset-btn">Clear</button>
+        <span class="spacer"></span><span class="footnote" id="edit-note"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ASSIGNMENTS ===== -->
+  <section class="view" id="view-assignments">
+    <div class="card">
+      <h2>Your assignments</h2>
+      <p class="hint">Copy a student link to share, or open submissions.</p>
+      <div id="assignment-list"><div class="empty">Loading…</div></div>
+    </div>
+  </section>
+
+  <!-- ===== SUBMISSIONS ===== -->
+  <section class="view" id="view-submissions">
+    <div class="card">
+      <h2>Submissions</h2>
+      <div id="active-now"></div>
+      <div class="row"><select id="sub-filter" style="max-width:360px"></select><span class="spacer"></span>
+        <button class="btn ghost" id="export-csv">⤓ Export CSV</button>
+        <button class="btn ghost" id="export-json">⤓ Export JSON</button>
+        <button class="btn ghost" id="download-videos">⤓ All videos (zip)</button>
+        <button class="btn danger" id="purge-videos">Delete videos</button>
+      </div>
+      <p class="footnote" style="margin-top:6px">Offload routine: <strong>Export CSV</strong> + <strong>download videos</strong> to your external drive, then <strong>Delete videos</strong> to free space (transcripts &amp; grades are kept).</p>
+      <div id="submission-list" style="margin-top:14px"><div class="empty">Loading…</div></div>
+    </div>
+    <div class="card" id="sub-detail" style="display:none"></div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="instructor.js?v=31"></script>
+</body>
+</html>

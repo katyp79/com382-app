@@ -1,0 +1,18 @@
+# NEVER commit these — secrets and local data
+.env
+.env.*
+!.env.example
+
+# dependencies (the host installs these)
+node_modules/
+
+# local data, videos, logs (not for the repo; the host has its own storage)
+data/
+*.webm
+*.log
+b.log
+b.err
+
+# os junk
+Thumbs.db
+.DS_Store

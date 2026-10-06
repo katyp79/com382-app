@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>COM 382 · Conceptualization Conversation</title>
+<link rel="stylesheet" href="app.css?v=28"/>
+</head>
+<body>
+<header class="top">
+  <div><div class="logo">COM 382 · Conceptualization Conversation</div>
+  <div class="sub" id="head-title">Talk through your own work</div></div>
+</header>
+
+<main>
+  <div id="msg"></div>
+
+  <!-- intro / gate -->
+  <section id="intro" class="card" style="display:none">
+    <h2 id="intro-title">…</h2>
+    <p class="hint" id="intro-sub"></p>
+
+    <details id="reading-wrap" style="margin:10px 0">
+      <summary style="cursor:pointer;font-weight:650;color:var(--accent-ink)">📖 Show the module material</summary>
+      <div class="reading-box" id="reading" style="margin-top:10px"></div>
+    </details>
+
+    <div id="cam-note" class="banner info" style="display:none">🎥 This assignment records video. When you begin, your browser will ask to use your camera and microphone — please allow both.</div>
+
+    <div class="banner warn" id="rules-box" style="display:block;text-align:left">
+      <strong>📋 Before you begin — please read</strong>
+      <p style="margin:8px 0 6px">This is a <strong>live, recorded spoken assessment</strong> of your understanding of the work you submitted. Ground rules:</p>
+      <ul style="margin:0 0 8px 18px;padding:0">
+        <li>Answer <strong>out loud, in your own words</strong>, from your own understanding of your work. Don't read your written definition aloud — explain it.</li>
+        <li><strong>Do not</strong> read answers aloud, paste text, switch to other apps or tabs, or use AI tools or another person. This is recorded and monitored — it will be obvious and it will lower your score.</li>
+        <li>Your <strong>video, audio, and transcript are recorded</strong> and reviewed by your instructor.</li>
+        <li><strong>Prepare before you start</strong> — you can't look things up mid-conversation, and there's a time limit per question.</li>
+      </ul>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:650;cursor:pointer;margin:0">
+        <input type="checkbox" id="agree-rules" style="width:auto;margin:0"/> I understand, and I'll answer on my own.
+      </label>
+    </div>
+
+    <div id="work-box" class="card" style="display:none;margin:12px 0;background:#faf9fc">
+      <h3 style="margin-top:0">Your work</h3>
+      <p class="hint" style="margin-top:0">Paste your <strong>final</strong> work here before you begin. The conversation will be about what <strong>you</strong> wrote, so paste exactly what you're submitting. (Pasting is fine in this box. During the conversation itself, answers are spoken.)</p>
+      <label>Your concept <span class="req">*</span></label>
+      <input type="text" id="w-concept" placeholder="e.g. burnout"/>
+      <label>Your final conceptual definition, including your dimensions and their definitions <span class="req">*</span></label>
+      <textarea id="w-definition" rows="7"></textarea>
+      <label>Your final observable empirical indicators, with response options <span class="req">*</span></label>
+      <textarea id="w-indicators" rows="7"></textarea>
+      <label>Your chatbot conversation <span class="footnote">(paste the whole conversation if your instructor asked you to)</span></label>
+      <textarea id="w-transcript" rows="5"></textarea>
+    </div>
+
+    <label>Your name <span class="req">*</span></label>
+    <input type="text" id="s-name" placeholder="First and last name"/>
+    <label>UW email <span class="req">*</span></label>
+    <input type="text" id="s-email" placeholder="netid@uw.edu"/>
+    <label>Student ID number <span class="req">*</span></label>
+    <input type="text" id="s-id" placeholder="e.g. 1234567"/>
+    <div class="row" style="margin-top:18px"><button class="btn big" id="begin-btn">Begin conversation</button></div>
+    <p class="footnote" id="speech-note" style="margin-top:10px"></p>
+  </section>
+
+  <!-- live session -->
+  <section id="session" style="display:none">
+    <div class="banner warn" id="progress-cue" style="display:none"></div>
+    <div class="grid2">
+      <div class="card">
+        <h3><span class="recdot" id="recdot" style="display:none"></span>You</h3>
+        <video id="cam" autoplay muted playsinline></video>
+        <div class="footnote" id="cam-status" style="margin-top:8px">Camera off</div>
+      </div>
+      <div class="card">
+        <h3>Conversation</h3>
+        <div class="chat" id="chat"></div>
+      </div>
+    </div>
+
+    <div class="card" id="answer-card">
+      <h3>The coach asked</h3>
+      <div id="current-q" class="current-q">…</div>
+      <div id="countdown" class="banner warn" style="display:none"></div>
+      <div style="text-align:center">
+        <button class="mic" id="mic" disabled><span class="dot"></span><span id="mic-label">Wait…</span></button>
+        <div class="footnote" id="mic-status" style="margin-top:10px">The coach will speak first.</div>
+        <div class="footnote" id="answer-timer" style="margin-top:6px;font-weight:600"></div>
+        <button class="btn subtle" id="retry-btn" style="display:none;margin-top:12px">↻ Retry</button>
+      </div>
+      <label style="margin-top:14px">Your answer <span class="footnote">(live preview — no need to edit this)</span></label>
+      <textarea id="answer" rows="4" placeholder="Your spoken words appear here…" readonly style="background:#f6f6f8;cursor:default"></textarea>
+      <div class="footnote" id="edit-note" style="margin-top:6px">🎙 The text above is a <strong>live preview</strong> — your final answer is transcribed from your <strong>audio</strong> when you click Send.</div>
+      <div class="row" style="margin-top:12px">
+        <span class="footnote" id="wc"></span><span class="spacer"></span>
+        <button class="btn" id="send-btn" disabled>Send answer →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- done -->
+  <section id="done" class="card" style="display:none">
+    <!-- shown while the recording uploads -->
+    <div class="banner warn" id="uploading-box">
+      <strong>⏳ Uploading your recording — please keep this tab open.</strong>
+      <div style="height:12px;background:#eee;border-radius:8px;overflow:hidden;margin:10px 0 6px">
+        <div id="upload-bar" style="height:100%;width:0%;background:var(--accent, #6d3bd1);transition:width .2s"></div>
+      </div>
+      <div class="footnote" id="upload-status">Finishing up…</div>
+      <div class="footnote" style="margin-top:4px">Don't close this tab or you'll lose your recording. A video can take a minute or two.</div>
+    </div>
+    <!-- shown only after the upload is confirmed -->
+    <div class="banner ok" id="done-box" style="display:none">✓ <strong>All done — submitted successfully.</strong> You can safely close this tab now. Thank you!</div>
+    <div id="done-feedback"></div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="student.js?v=30"></script>
+</body>
+</html>
