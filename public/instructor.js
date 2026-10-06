@@ -454,6 +454,7 @@ async function openSub(id) {
     ${s.studentWork ? `<details open style="margin:10px 0 16px"><summary style="cursor:pointer;font-weight:650">📝 Student's submitted work${s.studentWork.concept ? " — " + esc(s.studentWork.concept) : ""}</summary>
       <h4 style="margin:10px 0 4px">Conceptual definition</h4><div class="reading-box" style="white-space:pre-wrap">${esc(s.studentWork.definition || "(none)")}</div>
       <h4 style="margin:10px 0 4px">Indicators</h4><div class="reading-box" style="white-space:pre-wrap">${esc(s.studentWork.indicators || "(none)")}</div>
+      ${s.studentWork.validity ? `<h4 style="margin:10px 0 4px">Validity &amp; reliability answers</h4><div class="reading-box" style="white-space:pre-wrap">${esc(s.studentWork.validity)}</div>` : ""}
       ${s.studentWork.transcript ? `<details style="margin-top:8px"><summary style="cursor:pointer">Chatbot transcript they submitted</summary><div class="reading-box" style="white-space:pre-wrap">${esc(s.studentWork.transcript)}</div></details>` : ""}
     </details>` : ""}
     <h3>Transcript</h3>

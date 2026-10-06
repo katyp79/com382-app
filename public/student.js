@@ -218,6 +218,7 @@ $("#begin-btn").addEventListener("click", async () => {
       concept: $("#w-concept").value.trim(),
       definition: $("#w-definition").value.trim(),
       indicators: $("#w-indicators").value.trim(),
+      validity: $("#w-validity").value.trim(),
       transcript: $("#w-transcript").value.trim()
     };
     if (!studentWork.concept) return toast("Please enter your concept.");

@@ -609,7 +609,7 @@ app.get("/api/submissions.csv", requireInstructor, (req, res) => {
     if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
     return `"${s.replace(/"/g, '""')}"`;
   };
-  const head = ["Student", "Email", "StudentID", "Assignment", "Status", "AVStatus", "Started", "DurationSec", "CoachTalkSec", "SilentBeforeSec", "SilentAfterSec", "Submitted", "Grade", "AISuggestedScore", "FlaggedPaste", "FlaggedTimeOver", "EditedTranscript", "TabSwitches", "Copies", "CopiedText", "PastedText", "FeedbackShared", "StudentConcept", "StudentDefinition", "StudentIndicators", "Transcript", "Feedback"];
+  const head = ["Student", "Email", "StudentID", "Assignment", "Status", "AVStatus", "Started", "DurationSec", "CoachTalkSec", "SilentBeforeSec", "SilentAfterSec", "Submitted", "Grade", "AISuggestedScore", "FlaggedPaste", "FlaggedTimeOver", "EditedTranscript", "TabSwitches", "Copies", "CopiedText", "PastedText", "FeedbackShared", "StudentConcept", "StudentDefinition", "StudentIndicators", "StudentValidityReliability", "Transcript", "Feedback"];
   const lines = subs.map(s => {
     const dur = (s.startedAt && s.endedAt) ? Math.round((s.endedAt - s.startedAt) / 1000) : "";
     const t = talkTotals(s);
@@ -624,7 +624,7 @@ app.get("/api/submissions.csv", requireInstructor, (req, res) => {
       s.flaggedPaste ? "YES" : "", s.flaggedTimeOver ? "YES" : "", s.flaggedEdited ? "YES" : "", s.tabAway || 0, s.copies || 0,
       (s.copyEvents || []).map(c => c.text).join("  |  "), (s.pasteEvents || []).map(p => p.text).join("  |  "),
       s.feedbackApproved ? "YES" : "",
-      (s.studentWork && s.studentWork.concept) || "", (s.studentWork && s.studentWork.definition) || "", (s.studentWork && s.studentWork.indicators) || "",
+      (s.studentWork && s.studentWork.concept) || "", (s.studentWork && s.studentWork.definition) || "", (s.studentWork && s.studentWork.indicators) || "", (s.studentWork && s.studentWork.validity) || "",
       transcript, s.feedback || ""
     ].map(q).join(",");
   });
