@@ -113,15 +113,23 @@ let awayEvents = [];   // each time the student left the page: {videoOffsetMs, d
 let copyEvents = [];   // each copy: {text, videoOffsetMs, q}
 let pasteEvents = [];  // each paste into the answer box: {text, videoOffsetMs, q}
 let awayStart = null;
+// Starting the mic can make Chrome briefly take focus (permission bubble, mic indicator).
+// Ignore short focus losses that begin right after recording starts.
+let micGraceUntil = 0, awayWasHidden = false;
+const MIC_GRACE_MS = 4000, MIC_GRACE_MAX_AWAY_MS = 10000;
 const questionNum = () => history.filter(h => h.role === "tutor").length;
 // "away" = the tab is hidden OR the window lost focus (e.g. alt-tabbed to another app/window).
 // Only record stretches longer than 1.5s, so momentary focus blips (clicking the address bar) don't count.
 function checkActivity() {
   const active = !document.hidden && document.hasFocus();
+  if (!active && document.hidden) awayWasHidden = true; // a real tab switch / minimize, never a mic blip
   if (!active && awayStart === null) {
     awayStart = Date.now();
   } else if (active && awayStart !== null) {
     const dur = Date.now() - awayStart;
+    const micBlip = awayStart <= micGraceUntil && dur < MIC_GRACE_MAX_AWAY_MS && !awayWasHidden;
+    awayWasHidden = false;
+    if (micBlip) { awayStart = null; return; }
     if (sessionActive && dur > 1500 && awayEvents.length < 100) {
       awayEvents.push({ at: awayStart, videoOffsetMs: awayStart - (recordingStartedAt || awayStart), durationMs: dur, q: questionNum() });
       // >3s away = a real switch to another window/app (not an address-bar blip) — nudge them, on return.
@@ -203,6 +211,22 @@ let setupInfo = {
   }
 })();
 
+
+// Show the student their own pasted work during the conversation, so they don't need to leave the page.
+function showMyWork() {
+  if (!studentWork) return;
+  const box = $("#mywork"); if (!box) return;
+  box.innerHTML = "";
+  const parts = [["Concept", studentWork.concept], ["Conceptual definition", studentWork.definition], ["Indicators", studentWork.indicators], ["Validity and reliability", studentWork.validity]];
+  for (const [label, text] of parts) {
+    if (!text) continue;
+    const h = document.createElement("h4"); h.style.margin = "10px 0 4px"; h.textContent = label;
+    const d = document.createElement("div"); d.className = "reading-box"; d.style.whiteSpace = "pre-wrap"; d.textContent = text;
+    box.appendChild(h); box.appendChild(d);
+  }
+  $("#mywork-card").style.display = "block";
+}
+
 // ---------- begin ----------
 $("#begin-btn").addEventListener("click", async () => {
   if (!(window.SpeechRecognition || window.webkitSpeechRecognition)) return toast("Please open this link in Chrome or Edge on a computer.");
@@ -227,6 +251,7 @@ $("#begin-btn").addEventListener("click", async () => {
   }
 
   if (!$("#agree-rules") || !$("#agree-rules").checked) return toast("Please read the ground rules and check the box to begin.");
+  showMyWork();
 
   // AV is the highest-value signal for resolving an ambiguous session, so it's required by default.
   // The instructor can mark an assignment "AV optional" (accommodation), which relaxes the hard block.
@@ -477,6 +502,7 @@ function updateWC() {
 }
 
 function startListening(attempt) {
+  micGraceUntil = Date.now() + MIC_GRACE_MS;
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (waitTimer) { clearInterval(waitTimer); waitTimer = null; }
   $("#countdown").style.display = "none";
