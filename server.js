@@ -177,7 +177,7 @@ app.post("/api/assignments", requireInstructor, uploadPdf.single("pdf"), async (
     };
     store.saveAssignment(assignment);
     // #10: warn (don't block) if a configured concept doesn't appear to be covered by the source doc
-    const conceptWarnings = (assignment.tuning === "concepts") ? missingConcepts(assignment.concepts, assignment.readingText) : [];
+    const conceptWarnings = (assignment.tuning === "concepts" && !assignment.requireStudentWork) ? missingConcepts(assignment.concepts, assignment.readingText) : [];
     res.json({ ...assignment, conceptWarnings });
   } catch (e) {
     console.error("assignment save failed:", e);
