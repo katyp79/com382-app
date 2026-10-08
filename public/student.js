@@ -195,7 +195,15 @@ let setupInfo = {
     $("#reading-wrap").style.display = "none"; // source doc is private to the AI
   }
   if (assignment.requireCamera) $("#cam-note").style.display = "block";
-  if (assignment.requireStudentWork) $("#work-box").style.display = "block";
+  const essayMode = assignment.requireStudentWork && assignment.workType === "essay";
+  if (essayMode) {
+    $("#essay-box").style.display = "block";
+    $("#logo").textContent = "COM 382 · Voice Conversation";
+    document.title = "COM 382 · Voice Conversation";
+    $("#rule-own-words").innerHTML = "Answer <strong>out loud, in your own words</strong>, from your own understanding of your analysis. Don't read what you wrote aloud — explain it, and be ready to say where in the materials your evidence came from.";
+    const wc = () => { const n = $("#w-essay").value.trim().split(/\s+/).filter(Boolean).length; $("#essay-wc").textContent = n ? n.toLocaleString() + " words" : ""; };
+    $("#w-essay").addEventListener("input", wc);
+  } else if (assignment.requireStudentWork) $("#work-box").style.display = "block";
 
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const sn = $("#speech-note");
@@ -217,7 +225,9 @@ function showMyWork() {
   if (!studentWork) return;
   const box = $("#mywork"); if (!box) return;
   box.innerHTML = "";
-  const parts = [["Concept", studentWork.concept], ["Conceptual definition", studentWork.definition], ["Indicators", studentWork.indicators], ["Validity and reliability", studentWork.validity]];
+  const parts = studentWork.kind === "essay"
+    ? [["Your written analysis", studentWork.essay]]
+    : [["Concept", studentWork.concept], ["Conceptual definition", studentWork.definition], ["Indicators", studentWork.indicators], ["Validity and reliability", studentWork.validity]];
   for (const [label, text] of parts) {
     if (!text) continue;
     const h = document.createElement("h4"); h.style.margin = "10px 0 4px"; h.textContent = label;
@@ -237,7 +247,11 @@ $("#begin-btn").addEventListener("click", async () => {
   if (!/@([a-z0-9-]+\.)*(uw|washington)\.edu$/i.test(student.email)) return toast("Please enter your UW email (e.g. netid@uw.edu)");
   if (!student.id) return toast("Please enter your student ID number");
 
-  if (assignment.requireStudentWork) {
+  if (assignment.requireStudentWork && assignment.workType === "essay") {
+    studentWork = { kind: "essay", essay: $("#w-essay").value.trim(), docLink: $("#w-doclink").value.trim() };
+    if (studentWork.essay.split(/\s+/).filter(Boolean).length < 150) return toast("Please paste your complete written analysis — every part.");
+    if (studentWork.docLink && !/^https?:\/\//i.test(studentWork.docLink)) return toast("Please paste the full link to your document (starting with https://), or leave it blank.");
+  } else if (assignment.requireStudentWork) {
     studentWork = {
       concept: $("#w-concept").value.trim(),
       definition: $("#w-definition").value.trim(),

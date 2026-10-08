@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="top">
-  <div><div class="logo">COM 382 · Conceptualization Conversation</div>
+  <div><div class="logo" id="logo">COM 382 · Conceptualization Conversation</div>
   <div class="sub" id="head-title">Talk through your own work</div></div>
 </header>
 
@@ -31,7 +31,7 @@
       <strong>📋 Before you begin — please read</strong>
       <p style="margin:8px 0 6px">This is a <strong>live, recorded spoken assessment</strong> of your understanding of the work you submitted. Ground rules:</p>
       <ul style="margin:0 0 8px 18px;padding:0">
-        <li>Answer <strong>out loud, in your own words</strong>, from your own understanding of your work. Don't read your written definition aloud — explain it.</li>
+        <li id="rule-own-words">Answer <strong>out loud, in your own words</strong>, from your own understanding of your work. Don't read your written definition aloud — explain it.</li>
         <li><strong>Do not</strong> read answers aloud, paste text, switch to other apps or tabs, or use AI tools or another person. This is recorded and monitored — it will be obvious and it will lower your score.</li>
         <li>Your <strong>video, audio, and transcript are recorded</strong> and reviewed by your instructor.</li>
         <li><strong>Prepare before you start</strong> — you can't look things up mid-conversation, and there's a time limit per question.</li>
@@ -54,6 +54,16 @@
       <textarea id="w-validity" rows="5"></textarea>
       <label>Your chatbot conversation <span class="footnote">(paste the whole conversation if your instructor asked you to)</span></label>
       <textarea id="w-transcript" rows="5"></textarea>
+    </div>
+
+    <div id="essay-box" class="card" style="display:none;margin:12px 0;background:#faf9fc">
+      <h3 style="margin-top:0">Your written analysis</h3>
+      <p class="hint" style="margin-top:0">Paste your <strong>complete, final</strong> written analysis here before you begin — every part, exactly as you're submitting it. The conversation will be about what <strong>you</strong> wrote. (Pasting is fine in this box. During the conversation itself, answers are spoken.)</p>
+      <label>Your full written analysis <span class="req">*</span></label>
+      <textarea id="w-essay" rows="14"></textarea>
+      <div class="wordcount" id="essay-wc"></div>
+      <label>Link to your Google Doc <span class="footnote">(the same one you shared with your instructor)</span></label>
+      <input type="text" id="w-doclink" placeholder="https://docs.google.com/document/d/…"/>
     </div>
 
     <label>Your name <span class="req">*</span></label>
@@ -124,6 +134,6 @@
 </main>
 
 <div class="toast" id="toast"></div>
-<script src="student.js?v=31"></script>
+<script src="student.js?v=32"></script>
 </body>
 </html>

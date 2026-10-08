@@ -201,7 +201,7 @@ async function editAssignment(id) {
   $("#f-waiting").value = String(a.waitingTime || 0);
   $("#f-answerlimit").value = String(a.answerLimit || 0);
   $("#f-answerwindow").value = String(a.answerWindow || 0);
-  $("#f-studentwork").value = String(a.requireStudentWork !== false);
+  $("#f-studentwork").value = a.requireStudentWork === false ? "false" : (a.workType === "essay" ? "essay" : "true");
   $("#f-finalq").value = a.finalQuestion || "";
   const mat = a.pageRange ? ("PDF, pages " + a.pageRange) : (a.wordCount ? (a.wordCount.toLocaleString() + " words of text") : "on file");
   $("#edit-note").textContent = "Editing “" + a.title + "”. Its saved material (" + mat + ") is kept automatically — only add a PDF or paste text if you want to REPLACE it.";
@@ -451,7 +451,10 @@ async function openSub(id) {
       (s.videoPurgedAt ? `<div class="banner info">Video was offloaded/removed on ${fmtTZ(s.videoPurgedAt)}. Transcript kept below.</div>` : (s.videoError ? `<div class="banner warn">🎥 ${esc(s.videoError)}</div>` : ""))}
     ${s.hasAudio ? `<div style="margin:6px 0 16px"><div class="footnote" style="margin-bottom:4px">🔊 Audio backup${s.hasVideo ? "" : " — no video was captured, but here's the audio of what they said"}:</div><audio controls src="/api/audio/${s.id}?key=${encodeURIComponent(KEY)}" style="width:100%"></audio></div>` : ""}
     ${timeBreakdown(s, hist)}
-    ${s.studentWork ? `<details open style="margin:10px 0 16px"><summary style="cursor:pointer;font-weight:650">📝 Student's submitted work${s.studentWork.concept ? " — " + esc(s.studentWork.concept) : ""}</summary>
+    ${(s.studentWork && s.studentWork.kind === "essay") ? `<details open style="margin:10px 0 16px"><summary style="cursor:pointer;font-weight:650">📝 Student's written analysis (${s.studentWork.essay.split(/\s+/).filter(Boolean).length.toLocaleString()} words)</summary>
+      ${s.studentWork.docLink ? `<p style="margin:10px 0 4px"><a href="${esc(s.studentWork.docLink)}" target="_blank" rel="noopener noreferrer">Open the document they linked ↗</a> <span class="footnote">— compare against the version history if anything looks off</span></p>` : `<p class="footnote" style="margin:10px 0 4px">No document link given.</p>`}
+      <div class="reading-box" style="white-space:pre-wrap">${esc(s.studentWork.essay)}</div>
+    </details>` : s.studentWork ? `<details open style="margin:10px 0 16px"><summary style="cursor:pointer;font-weight:650">📝 Student's submitted work${s.studentWork.concept ? " — " + esc(s.studentWork.concept) : ""}</summary>
       <h4 style="margin:10px 0 4px">Conceptual definition</h4><div class="reading-box" style="white-space:pre-wrap">${esc(s.studentWork.definition || "(none)")}</div>
       <h4 style="margin:10px 0 4px">Indicators</h4><div class="reading-box" style="white-space:pre-wrap">${esc(s.studentWork.indicators || "(none)")}</div>
       ${s.studentWork.validity ? `<h4 style="margin:10px 0 4px">Validity &amp; reliability answers</h4><div class="reading-box" style="white-space:pre-wrap">${esc(s.studentWork.validity)}</div>` : ""}
