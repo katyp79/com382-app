@@ -172,6 +172,9 @@ app.post("/api/assignments", requireInstructor, uploadPdf.single("pdf"), async (
       minWords: parseInt(b.minWords || "10", 10),
       maxQuestions: parseInt(b.maxQuestions || "5", 10),
       requireStudentWork: b.requireStudentWork !== "false", // COM 382: students paste their own work first
+      // what they paste: "concept" (definition + indicators) or "essay" (a written analysis). The form
+      // sends requireStudentWork = "true" | "essay" | "false"; older assignments have no workType = concept.
+      workType: b.requireStudentWork === "essay" ? "essay" : "concept",
       finalQuestion: (b.finalQuestion || "").trim(),
       createdAt: existing?.createdAt || Date.now()
     };
@@ -208,7 +211,8 @@ app.get("/api/assignments/:id/run", (req, res) => {
     answerLimit: a.answerLimit || 0,
     answerWindow: a.answerWindow || 0,
     avOptional: !!a.avOptional,
-    requireStudentWork: a.requireStudentWork !== false
+    requireStudentWork: a.requireStudentWork !== false,
+    workType: a.workType === "essay" ? "essay" : "concept"
   });
 });
 
@@ -609,7 +613,7 @@ app.get("/api/submissions.csv", requireInstructor, (req, res) => {
     if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
     return `"${s.replace(/"/g, '""')}"`;
   };
-  const head = ["Student", "Email", "StudentID", "Assignment", "Status", "AVStatus", "Started", "DurationSec", "CoachTalkSec", "SilentBeforeSec", "SilentAfterSec", "Submitted", "Grade", "AISuggestedScore", "FlaggedPaste", "FlaggedTimeOver", "EditedTranscript", "TabSwitches", "Copies", "CopiedText", "PastedText", "FeedbackShared", "StudentConcept", "StudentDefinition", "StudentIndicators", "StudentValidityReliability", "Transcript", "Feedback"];
+  const head = ["Student", "Email", "StudentID", "Assignment", "Status", "AVStatus", "Started", "DurationSec", "CoachTalkSec", "SilentBeforeSec", "SilentAfterSec", "Submitted", "Grade", "AISuggestedScore", "FlaggedPaste", "FlaggedTimeOver", "EditedTranscript", "TabSwitches", "Copies", "CopiedText", "PastedText", "FeedbackShared", "StudentConcept", "StudentDefinition", "StudentIndicators", "StudentValidityReliability", "Transcript", "Feedback", "StudentWrittenAnalysis", "StudentDocLink"];
   const lines = subs.map(s => {
     const dur = (s.startedAt && s.endedAt) ? Math.round((s.endedAt - s.startedAt) / 1000) : "";
     const t = talkTotals(s);
@@ -625,7 +629,8 @@ app.get("/api/submissions.csv", requireInstructor, (req, res) => {
       (s.copyEvents || []).map(c => c.text).join("  |  "), (s.pasteEvents || []).map(p => p.text).join("  |  "),
       s.feedbackApproved ? "YES" : "",
       (s.studentWork && s.studentWork.concept) || "", (s.studentWork && s.studentWork.definition) || "", (s.studentWork && s.studentWork.indicators) || "", (s.studentWork && s.studentWork.validity) || "",
-      transcript, s.feedback || ""
+      transcript, s.feedback || "",
+      (s.studentWork && s.studentWork.essay) || "", (s.studentWork && s.studentWork.docLink) || ""
     ].map(q).join(",");
   });
   const BOM = String.fromCharCode(0xFEFF); // so Excel reads it as UTF-8
