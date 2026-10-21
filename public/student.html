@@ -57,13 +57,15 @@
     </div>
 
     <div id="essay-box" class="card" style="display:none;margin:12px 0;background:#faf9fc">
-      <h3 style="margin-top:0">Your written analysis</h3>
-      <p class="hint" style="margin-top:0">Paste your <strong>complete, final</strong> written analysis here before you begin — every part, exactly as you're submitting it. The conversation will be about what <strong>you</strong> wrote. (Pasting is fine in this box. During the conversation itself, answers are spoken.)</p>
-      <label>Your full written analysis <span class="req">*</span></label>
+      <h3 style="margin-top:0" id="essay-h">Your written analysis</h3>
+      <p class="hint" style="margin-top:0" id="essay-hint">Paste your <strong>complete, final</strong> written analysis here before you begin — every part, exactly as you're submitting it. The conversation will be about what <strong>you</strong> wrote. (Pasting is fine in this box. During the conversation itself, answers are spoken.)</p>
+      <label id="essay-label">Your full written analysis <span class="req">*</span></label>
       <textarea id="w-essay" rows="14"></textarea>
       <div class="wordcount" id="essay-wc"></div>
-      <label>Link to your Google Doc <span class="footnote">(the same one you shared with your instructor)</span></label>
-      <input type="text" id="w-doclink" placeholder="https://docs.google.com/document/d/…"/>
+      <div id="doclink-wrap">
+        <label>Link to your Google Doc <span class="footnote">(the same one you shared with your instructor)</span></label>
+        <input type="text" id="w-doclink" placeholder="https://docs.google.com/document/d/…"/>
+      </div>
     </div>
 
     <label>Your name <span class="req">*</span></label>
@@ -134,6 +136,6 @@
 </main>
 
 <div class="toast" id="toast"></div>
-<script src="student.js?v=32"></script>
+<script src="student.js?v=33"></script>
 </body>
 </html>

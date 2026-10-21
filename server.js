@@ -114,6 +114,10 @@ app.post("/api/login", (req, res) => {
 });
 
 // ---------- assignments ----------
+// "essay" and "answers" both store pasted text as studentWork.kind = "essay"; workType only changes
+// the student-facing labels and the coach's instructions.
+function normWorkType(v) { return v === "essay" || v === "answers" ? v : "concept"; }
+
 app.post("/api/assignments", requireInstructor, uploadPdf.single("pdf"), async (req, res) => {
   try {
     const b = req.body;
@@ -172,9 +176,10 @@ app.post("/api/assignments", requireInstructor, uploadPdf.single("pdf"), async (
       minWords: parseInt(b.minWords || "10", 10),
       maxQuestions: parseInt(b.maxQuestions || "5", 10),
       requireStudentWork: b.requireStudentWork !== "false", // COM 382: students paste their own work first
-      // what they paste: "concept" (definition + indicators) or "essay" (a written analysis). The form
-      // sends requireStudentWork = "true" | "essay" | "false"; older assignments have no workType = concept.
-      workType: b.requireStudentWork === "essay" ? "essay" : "concept",
+      // what they paste: "concept" (definition + indicators), "essay" (a written analysis), or "answers"
+      // (their written answers to assignment questions, e.g. an extra credit quiz). The form sends
+      // requireStudentWork = "true" | "essay" | "answers" | "false"; older assignments have no workType = concept.
+      workType: normWorkType(b.requireStudentWork),
       finalQuestion: (b.finalQuestion || "").trim(),
       createdAt: existing?.createdAt || Date.now()
     };
@@ -212,7 +217,7 @@ app.get("/api/assignments/:id/run", (req, res) => {
     answerWindow: a.answerWindow || 0,
     avOptional: !!a.avOptional,
     requireStudentWork: a.requireStudentWork !== false,
-    workType: a.workType === "essay" ? "essay" : "concept"
+    workType: normWorkType(a.workType)
   });
 });
 
